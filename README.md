@@ -39,41 +39,50 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
 
 ### 4. Configure the Application
 
-You need to configure the GitHub token and repository information. There are several ways to do this:
+You need to configure the GitHub token and repository information. The recommended approach is using GitHub Actions with repository secrets (most secure).
 
-#### Option A: Using config.js File (Recommended for Production)
+#### Option A: Using GitHub Actions with Secrets (Recommended - Most Secure)
+
+This approach uses GitHub Actions to automatically generate `config.js` from repository secrets during deployment. Your secrets never appear in the repository.
+
+1. **Set up GitHub Secrets:**
+   - Go to your repository on GitHub
+   - Navigate to Settings → Secrets and variables → Actions
+   - Click "New repository secret" and add the following secrets:
+     - `GH_PAT`: Your GitHub Personal Access Token (with `repo` scope)
+     - `REPO_OWNER`: Your GitHub username (e.g., `mkeeves`)
+     - `REPO_NAME`: Your repository name (e.g., `url-shortener`)
+     - `TURNSTILE_SITE_KEY`: Your Cloudflare Turnstile site key (optional - leave empty if not using)
+
+2. **Configure GitHub Pages:**
+   - Go to Settings → Pages
+   - Under "Source", select "GitHub Actions" (not "Deploy from a branch")
+   - The workflow will automatically deploy on every push to `main`
+
+3. **Deploy:**
+   - Push any change to trigger the workflow
+   - The workflow will create `config.js` automatically from your secrets
+   - Your site will be deployed with the configuration included
+
+**Note:** The `config.js` file is generated during deployment and won't appear in your repository. It's only included in the GitHub Pages deployment.
+
+#### Option B: Using config.js File (For Local Development)
 
 1. Copy `config.example.js` to `config.js`:
 ```bash
 cp config.example.js config.js
 ```
 
-2. Edit `config.js` and fill in your values:
-```javascript
-window.GITHUB_TOKEN = 'your_token_here';
-window.REPO_OWNER = 'your_username';
-window.REPO_NAME = 'url-shortener';
-window.RECAPTCHA_SITE_KEY = 'your_recaptcha_site_key'; // Optional
-```
+2. Edit `config.js` and fill in your values
+3. **Important**: `config.js` is in `.gitignore` - never commit it to the repository
 
-3. **Important**: `config.js` is already in `.gitignore` to prevent committing sensitive data. The application will automatically load it via `config-loader.js`.
+#### Option C: Using localStorage (For Quick Testing)
 
-4. **Security Note**: Since `config.js` contains sensitive data, consider these options:
-   - For production: Use GitHub Actions to inject the token at build time
-   - For development: Use browser localStorage (see Option B)
-   - Never commit `config.js` to the repository
-
-#### Option B: Using localStorage (For Development/Testing)
-
-1. Open browser console on your site
+1. Open browser console on your deployed site
 2. Run:
 ```javascript
 localStorage.setItem('github_token', 'your_token_here');
 ```
-
-#### Option C: Using GitHub Actions (Most Secure)
-
-Create `.github/workflows/deploy.yml` to inject tokens at build time (requires additional setup).
 
 ### 5. Cloudflare Turnstile Setup (Optional but Recommended)
 

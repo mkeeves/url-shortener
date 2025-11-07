@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener - tinyurl.mkeeves.com</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>URL Shortener</h1>
+            <p class="subtitle">Create short, memorable links</p>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <form id="urlForm">
+                    <div class="input-group">
+                        <label for="longUrl">Enter your long URL:</label>
+                        <input 
+                            type="url" 
+                            id="longUrl" 
+                            name="longUrl" 
+                            placeholder="https://example.com/very/long/url"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="g-recaptcha" 
+                         data-sitekey="" 
+                         data-size="invisible" 
+                         data-callback="onRecaptchaSuccess">
+                    </div>
+                    
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <span class="btn-text">Shorten URL</span>
+                        <span class="btn-loader" style="display: none;">⏳ Creating...</span>
+                    </button>
+                </form>
+
+                <div id="result" class="result-container" style="display: none;">
+                    <div class="success-message">
+                        <h2>✓ URL Created Successfully!</h2>
+                        <div class="short-url-display">
+                            <input type="text" id="shortUrlDisplay" readonly>
+                            <button id="copyBtn" class="btn btn-secondary">Copy</button>
+                        </div>
+                        <p class="info-text">Your short URL is ready to share!</p>
+                    </div>
+                </div>
+
+                <div id="error" class="error-container" style="display: none;">
+                    <p class="error-message"></p>
+                </div>
+            </div>
+
+            <div class="links">
+                <a href="analytics.html" class="link-btn">View Analytics Dashboard</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>Hosted on GitHub Pages</p>
+        </footer>
+    </div>
+
+    <!-- Load configuration (create config.js from config.example.js) -->
+    <script src="js/config-loader.js"></script>
+    <script src="js/github-api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

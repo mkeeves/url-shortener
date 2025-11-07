@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - URL Shortener</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analytics Dashboard</h1>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-secondary">Create New URL</a>
+                <button id="refreshBtn" class="btn btn-secondary">Refresh Data</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total URLs</h3>
+                    <p class="stat-value" id="totalUrls">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Clicks</h3>
+                    <p class="stat-value" id="totalClicks">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Average Clicks</h3>
+                    <p class="stat-value" id="avgClicks">0</p>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h2>Most Popular URLs</h2>
+                <div id="popularUrls" class="url-list">
+                    <p class="loading">Loading...</p>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h2>Recent URLs</h2>
+                <div id="recentUrls" class="url-list">
+                    <p class="loading">Loading...</p>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <p class="last-updated" id="lastUpdated">Last updated: Never</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Hosted on GitHub Pages</p>
+        </footer>
+    </div>
+
+    <!-- Load configuration (create config.js from config.example.js) -->
+    <script src="js/config-loader.js"></script>
+    <script src="js/github-api.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+</html>
+

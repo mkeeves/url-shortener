@@ -14,12 +14,33 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Create config.js from secrets
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          REPO_OWNER: ${{ secrets.REPO_OWNER }}
+          REPO_NAME: ${{ secrets.REPO_NAME }}
+          TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
         run: |
+          if [ -z "$GH_PAT" ]; then
+            echo "Error: GH_PAT secret is not set"
+            exit 1
+          fi
+          if [ -z "$REPO_OWNER" ]; then
+            echo "Error: REPO_OWNER secret is not set"
+            exit 1
+          fi
+          if [ -z "$REPO_NAME" ]; then
+            echo "Error: REPO_NAME secret is not set"
+            exit 1
+          fi
+          
           cat > config.js << EOF
           /**
            * Configuration File
@@ -27,10 +48,10 @@ jobs:
            * DO NOT EDIT MANUALLY - Changes will be overwritten
            */
           
-          window.GITHUB_TOKEN = '${{ secrets.GH_PAT }}';
-          window.REPO_OWNER = '${{ secrets.REPO_OWNER }}';
-          window.REPO_NAME = '${{ secrets.REPO_NAME }}';
-          window.TURNSTILE_SITE_KEY = '${{ secrets.TURNSTILE_SITE_KEY }}';
+          window.GITHUB_TOKEN = '$GH_PAT';
+          window.REPO_OWNER = '$REPO_OWNER';
+          window.REPO_NAME = '$REPO_NAME';
+          window.TURNSTILE_SITE_KEY = '$TURNSTILE_SITE_KEY';
           EOF
 
       - name: Setup Pages

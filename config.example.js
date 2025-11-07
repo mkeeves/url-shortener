@@ -18,7 +18,7 @@ window.REPO_OWNER = 'your_username';
 // GitHub Repository Name
 window.REPO_NAME = 'url-shortener';
 
-// Google reCAPTCHA v3 Site Key (optional but recommended)
-// Get one from: https://www.google.com/recaptcha/admin
-window.RECAPTCHA_SITE_KEY = 'your_recaptcha_site_key_here';
+// Cloudflare Turnstile Site Key (optional but recommended)
+// Get one from: https://dash.cloudflare.com/?to=/:account/turnstile
+window.TURNSTILE_SITE_KEY = 'your_turnstile_site_key_here';
 

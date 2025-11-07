@@ -7,7 +7,7 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
 - ✅ Create short URLs via web form
 - ✅ Immediate redirects to long URLs
 - ✅ Analytics dashboard with click tracking
-- ✅ reCAPTCHA v3 integration for user validation
+- ✅ Cloudflare Turnstile integration for user validation
 - ✅ Modern, responsive UI
 - ✅ Secure GitHub API integration
 - ✅ Custom domain support
@@ -75,26 +75,18 @@ localStorage.setItem('github_token', 'your_token_here');
 
 Create `.github/workflows/deploy.yml` to inject tokens at build time (requires additional setup).
 
-### 5. reCAPTCHA Setup (Optional but Recommended)
+### 5. Cloudflare Turnstile Setup (Optional but Recommended)
 
-1. Go to [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin)
-2. Register a new site:
-   - Label: URL Shortener
-   - reCAPTCHA type: reCAPTCHA v3
-   - Domains: `tinyurl.mkeeves.com`, `yourusername.github.io`
-3. Copy the Site Key
-4. Add it to your configuration (see step 4)
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to Turnstile (under Security → Turnstile)
+3. Create a new site:
+   - Site name: URL Shortener
+   - Domain: `tinyurl.mkeeves.com` (and optionally `yourusername.github.io`)
+   - Widget mode: Managed (or Invisible if preferred)
+4. Copy the Site Key
+5. Add it to your `config.js` file as `TURNSTILE_SITE_KEY`
 
-### 6. Update HTML Files
-
-Update the reCAPTCHA site key in `index.html`:
-```html
-<div class="g-recaptcha" 
-     data-sitekey="YOUR_RECAPTCHA_SITE_KEY" 
-     data-size="invisible" 
-     data-callback="onRecaptchaSuccess">
-</div>
-```
+The Turnstile widget will automatically appear on the form when configured. If not configured, the form will work without it.
 
 ## Usage
 
@@ -135,7 +127,7 @@ For low-volume production use, authenticated requests provide sufficient capacit
 ## Security Considerations
 
 1. **GitHub Token**: Keep your token secure. Never commit it to the repository.
-2. **reCAPTCHA**: Helps prevent abuse and automated URL creation
+2. **Cloudflare Turnstile**: Helps prevent abuse and automated URL creation
 3. **Input Validation**: URLs are validated before creation
 4. **HTTPS**: GitHub Pages provides SSL certificates automatically
 

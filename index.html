@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Shortener - tinyurl.mkeeves.com</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
     <div class="container">
@@ -28,11 +28,7 @@
                         >
                     </div>
                     
-                    <div class="g-recaptcha" 
-                         data-sitekey="" 
-                         data-size="invisible" 
-                         data-callback="onRecaptchaSuccess">
-                    </div>
+                    <div id="turnstile-widget"></div>
                     
                     <button type="submit" id="submitBtn" class="btn btn-primary">
                         <span class="btn-text">Shorten URL</span>

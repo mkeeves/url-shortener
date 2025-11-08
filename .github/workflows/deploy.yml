@@ -54,14 +54,33 @@ jobs:
                   # Replace the config.js script tag with inline config
                   new_content = re.sub(pattern, config_script, content, flags=re.DOTALL)
                   
+                  # Verify the replacement worked
+                  if 'window.API_BASE_URL' not in new_content:
+                      print(f"ERROR: Configuration not found in {filename} after replacement!")
+                      exit(1)
+                  
                   with open(filename, 'w') as f:
                       f.write(new_content)
                   
-                  print(f"Configuration injected into {filename}")
+                  # Verify the file was written correctly
+                  with open(filename, 'r') as f:
+                      verify_content = f.read()
+                      if 'window.API_BASE_URL' not in verify_content:
+                          print(f"ERROR: Configuration not found in {filename} after writing!")
+                          exit(1)
+                  
+                  print(f"✅ Configuration injected into {filename}")
           PYTHON_SCRIPT
           
           echo "Configuration injection complete"
           echo "API_BASE_URL: ${API_URL}"
+          
+          # Final verification - check that the files contain the configuration
+          if ! grep -q "window.API_BASE_URL" index.html; then
+            echo "ERROR: Configuration verification failed for index.html"
+            exit 1
+          fi
+          echo "✅ Configuration verified in all HTML files"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

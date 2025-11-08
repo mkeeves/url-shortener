@@ -28,29 +28,39 @@ jobs:
         run: |
           # Set default API URL if secret is not set
           API_URL="${API_BASE_URL:-https://url-shortener-api.mkeeves.workers.dev}"
+          TURNSTILE_KEY="${TURNSTILE_SITE_KEY:-}"
           
-          # Create inline config script
-          cat > /tmp/config_inline.js << EOF
-          <!-- Configuration injected by GitHub Actions -->
+          # Use Python to inject configuration into HTML files
+          python3 << 'PYTHON_SCRIPT'
+          import re
+          import os
+          
+          api_url = os.environ.get('API_BASE_URL', 'https://url-shortener-api.mkeeves.workers.dev')
+          turnstile_key = os.environ.get('TURNSTILE_SITE_KEY', '')
+          
+          config_script = f'''    <!-- Configuration injected by GitHub Actions -->
           <script>
-          window.API_BASE_URL = '${API_URL}';
-          window.TURNSTILE_SITE_KEY = '${TURNSTILE_SITE_KEY:-}';
-          </script>
-          EOF
+          window.API_BASE_URL = '{api_url}';
+          window.TURNSTILE_SITE_KEY = '{turnstile_key}';
+          </script>'''
           
-          # Replace the config.js script tag with inline config in all HTML files
-          for file in index.html analytics.html 404.html; do
-            if [ -f "$file" ]; then
-              # Use perl for multiline replacement
-              perl -i -pe 'BEGIN{undef $/;} s|<!-- Load configuration.*?onerror.*?</script>|<!-- Configuration injected by GitHub Actions -->\n    <script>\n    window.API_BASE_URL = '\''${ENV{API_BASE_URL}}'\'';\n    window.TURNSTILE_SITE_KEY = '\''${ENV{TURNSTILE_SITE_KEY}}'\'';\n    </script>|s' "$file"
-              # Replace the environment variable placeholders
-              sed -i.bak "s|\${ENV{API_BASE_URL}}|${API_URL}|g" "$file"
-              sed -i.bak "s|\${ENV{TURNSTILE_SITE_KEY}}|${TURNSTILE_SITE_KEY:-}|g" "$file"
-              rm -f "$file.bak"
-            fi
-          done
+          pattern = r'<!-- Load configuration.*?onerror.*?</script>'
           
-          echo "Configuration injected into HTML files"
+          for filename in ['index.html', 'analytics.html', '404.html']:
+              if os.path.exists(filename):
+                  with open(filename, 'r') as f:
+                      content = f.read()
+                  
+                  # Replace the config.js script tag with inline config
+                  new_content = re.sub(pattern, config_script, content, flags=re.DOTALL)
+                  
+                  with open(filename, 'w') as f:
+                      f.write(new_content)
+                  
+                  print(f"Configuration injected into {filename}")
+          PYTHON_SCRIPT
+          
+          echo "Configuration injection complete"
           echo "API_BASE_URL: ${API_URL}"
 
       - name: Setup Pages

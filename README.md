@@ -30,18 +30,92 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
    - Add a CNAME record: `tinyurl.mkeeves.com` → `yourusername.github.io`
    - Wait for DNS propagation (can take up to 24 hours)
 
-### 3. GitHub Personal Access Token
+### 3. Create Data Repository (Recommended for Security)
+
+**Why a separate repository?** Even with fine-grained tokens, a token with write access can modify ANY file in the repository. Using a separate data-only repository limits the token's scope to only the data files, protecting your frontend code, workflows, and configuration.
+
+1. **Create a new private repository** (e.g., `url-shortener-data`)
+   - Go to GitHub → New repository
+   - Name: `url-shortener-data` (or your preferred name)
+   - Make it **Private**
+   - Don't initialize with README, .gitignore, or license
+
+2. **Create `urls.json` in the new repository:**
+   ```bash
+   # Clone the new repository
+   git clone https://github.com/yourusername/url-shortener-data.git
+   cd url-shortener-data
+   
+   # Create initial urls.json
+   echo '{}' > urls.json
+   
+   # Commit and push
+   git add urls.json
+   git commit -m "Initial urls.json"
+   git push origin main
+   ```
+
+### 4. GitHub Personal Access Token
 
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Generate a new token with the following scopes:
-   - `repo` (Full control of private repositories)
+   - `repo` (Full control of private repositories) - **only needed if using a private data repo**
+   - Or use **Fine-grained tokens** (recommended):
+     - Repository access: Only select repositories → choose your `url-shortener-data` repo
+     - Permissions: Contents (Read and write), Metadata (Read-only)
 3. Copy the token (you won't be able to see it again)
 
-### 4. Deploy Secure API Backend (REQUIRED)
+**Note:** If you're using a separate data repository, the token only needs access to that repository, not your frontend repository. This significantly reduces security risk.
+
+### 5. Deploy Secure API Backend (REQUIRED)
 
 **IMPORTANT:** The GitHub token is now stored server-side only and never exposed to the browser. You must deploy a serverless API function.
 
-#### Deploy to Vercel (Recommended - Easiest)
+#### Deploy to Cloudflare Workers (Recommended)
+
+1. **Install Wrangler CLI:**
+   ```bash
+   npm i -g wrangler
+   ```
+
+2. **Login to Cloudflare:**
+   ```bash
+   wrangler login
+   ```
+   This will open your browser to authenticate with Cloudflare.
+
+3. **Set Environment Variables as Secrets:**
+   ```bash
+   wrangler secret put GITHUB_TOKEN
+   # Paste your GitHub Personal Access Token when prompted
+   
+   wrangler secret put REPO_OWNER
+   # Enter your GitHub username (e.g., mkeeves)
+   
+   wrangler secret put REPO_NAME
+   # Enter your DATA repository name (e.g., url-shortener-data)
+   # ⚠️ This should be the separate data repository, NOT the frontend repo!
+   ```
+
+4. **Deploy the API:**
+   ```bash
+   cd /path/to/url-shortener
+   wrangler deploy
+   ```
+
+5. **Get your API URL:**
+   - After deployment, Wrangler will show you a URL like: `https://url-shortener-api.your-subdomain.workers.dev`
+   - Your API endpoint will be: `https://url-shortener-api.your-subdomain.workers.dev`
+
+6. **Update GitHub Secrets:**
+   - Go to your GitHub repository → Settings → Secrets and variables → Actions
+   - Add `API_BASE_URL`: `https://url-shortener-api.your-subdomain.workers.dev`
+
+**Optional: Custom Domain Setup**
+- You can add a custom domain in Cloudflare Workers dashboard
+- Or configure routes in `wrangler.toml` to use a subdomain like `api.tinyurl.mkeeves.com`
+
+#### Alternative: Deploy to Vercel
 
 1. **Install Vercel CLI:**
    ```bash
@@ -67,10 +141,6 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
    - After deployment, Vercel will give you a URL like: `https://your-project.vercel.app`
    - Your API endpoint will be: `https://your-project.vercel.app/api/urls`
 
-5. **Update GitHub Secrets:**
-   - Go to your GitHub repository → Settings → Secrets and variables → Actions
-   - Add `API_BASE_URL`: `https://your-project.vercel.app/api/urls`
-
 #### Alternative: Deploy to Netlify
 
 1. Create `netlify.toml`:
@@ -88,7 +158,7 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
 
 3. Deploy to Netlify and set environment variables in the dashboard
 
-### 5. Configure Frontend
+### 6. Configure Frontend
 
 1. **Set up GitHub Secrets for Frontend:**
    - Go to your repository on GitHub
@@ -107,7 +177,7 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
    - The workflow will create `config.js` with only the API URL (no tokens!)
    - Your site will be deployed securely
 
-### 5. Cloudflare Turnstile Setup (Optional but Recommended)
+### 7. Cloudflare Turnstile Setup (Optional but Recommended)
 
 1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
 2. Navigate to Turnstile (under Security → Turnstile)
@@ -159,11 +229,12 @@ For low-volume production use, authenticated requests provide sufficient capacit
 ## Security Considerations
 
 1. **GitHub Token**: Stored server-side only in your serverless function. **Never exposed to the browser.**
-2. **API Proxy**: All GitHub API calls go through a secure backend proxy
-3. **Cloudflare Turnstile**: Helps prevent abuse and automated URL creation
-4. **Input Validation**: URLs are validated before creation
-5. **HTTPS**: GitHub Pages and serverless functions provide SSL certificates automatically
-6. **CORS**: API includes proper CORS headers for secure cross-origin requests
+2. **Separate Data Repository** (Recommended): Using a dedicated private repository for `urls.json` limits the token's scope. Even if compromised, the token can only access the data repository, not your frontend code, workflows, or configuration files.
+3. **API Proxy**: All GitHub API calls go through a secure backend proxy
+4. **Cloudflare Turnstile**: Helps prevent abuse and automated URL creation
+5. **Input Validation**: URLs are validated before creation
+6. **HTTPS**: GitHub Pages and serverless functions provide SSL certificates automatically
+7. **CORS**: API includes proper CORS headers for secure cross-origin requests
 
 ## Troubleshooting
 

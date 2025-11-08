@@ -4,7 +4,23 @@ This API acts as a secure proxy between the frontend and GitHub's API, keeping t
 
 ## Deployment Options
 
-### Option 1: Vercel (Recommended - Easiest)
+### Option 1: Cloudflare Workers (Recommended)
+
+1. Install Wrangler CLI: `npm i -g wrangler`
+2. Login to Cloudflare: `wrangler login`
+3. Set secrets:
+   ```bash
+   wrangler secret put GITHUB_TOKEN
+   wrangler secret put REPO_OWNER
+   wrangler secret put REPO_NAME
+   ```
+4. Deploy: `wrangler deploy`
+
+The API will be available at: `https://url-shortener-api.your-subdomain.workers.dev`
+
+**Note:** Use `api/urls-worker.js` for Cloudflare Workers (already configured in `wrangler.toml`).
+
+### Option 2: Vercel
 
 1. Install Vercel CLI: `npm i -g vercel`
 2. Deploy: `vercel`
@@ -15,7 +31,9 @@ This API acts as a secure proxy between the frontend and GitHub's API, keeping t
 
 The API will be available at: `https://your-project.vercel.app/api/urls`
 
-### Option 2: Netlify Functions
+**Note:** Use `api/urls.js` for Vercel (configured in `vercel.json`).
+
+### Option 3: Netlify Functions
 
 1. Create `netlify.toml`:
 ```toml
@@ -31,19 +49,6 @@ The API will be available at: `https://your-project.vercel.app/api/urls`
 2. Move `api/urls.js` to `netlify/functions/urls.js`
 3. Set environment variables in Netlify dashboard
 4. Deploy to Netlify
-
-### Option 3: Cloudflare Workers
-
-1. Install Wrangler: `npm i -g wrangler`
-2. Create `wrangler.toml`:
-```toml
-name = "url-shortener-api"
-main = "api/urls.js"
-compatibility_date = "2024-01-01"
-```
-
-3. Set secrets: `wrangler secret put GITHUB_TOKEN`
-4. Deploy: `wrangler publish`
 
 ## API Endpoints
 

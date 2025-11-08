@@ -8,6 +8,7 @@
  */
 
 // API Base URL - Your serverless function endpoint
+// For Cloudflare Workers: https://url-shortener-api.your-subdomain.workers.dev
 // For Vercel: https://your-project.vercel.app/api/urls
 // For Netlify: https://your-site.netlify.app/api/urls
 // Leave empty or use '/api/urls' for relative path (same domain)

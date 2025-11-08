@@ -18,7 +18,7 @@ async function loadAnalytics() {
     refreshBtn.textContent = 'Loading...';
     
     try {
-        const urls = await githubAPI.getUrls();
+        const urls = await apiClient.getUrls();
         displayAnalytics(urls);
     } catch (error) {
         console.error('Error loading analytics:', error);

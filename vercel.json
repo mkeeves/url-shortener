@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/urls.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/urls",
+      "destination": "/api/urls.js"
+    }
+  ]
+}
+

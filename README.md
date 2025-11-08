@@ -37,22 +37,65 @@ A secure, production-ready URL shortener application hosted on GitHub Pages. URL
    - `repo` (Full control of private repositories)
 3. Copy the token (you won't be able to see it again)
 
-### 4. Configure the Application
+### 4. Deploy Secure API Backend (REQUIRED)
 
-You need to configure the GitHub token and repository information. The recommended approach is using GitHub Actions with repository secrets (most secure).
+**IMPORTANT:** The GitHub token is now stored server-side only and never exposed to the browser. You must deploy a serverless API function.
 
-#### Option A: Using GitHub Actions with Secrets (Recommended - Most Secure)
+#### Deploy to Vercel (Recommended - Easiest)
 
-This approach uses GitHub Actions to automatically generate `config.js` from repository secrets during deployment. Your secrets never appear in the repository.
+1. **Install Vercel CLI:**
+   ```bash
+   npm i -g vercel
+   ```
 
-1. **Set up GitHub Secrets:**
-   - Go to your repository on GitHub
-   - Navigate to Settings → Secrets and variables → Actions
-   - Click "New repository secret" and add the following secrets:
-     - `GH_PAT`: Your GitHub Personal Access Token (with `repo` scope)
+2. **Deploy the API:**
+   ```bash
+   cd /path/to/url-shortener
+   vercel
+   ```
+   Follow the prompts to create a new project.
+
+3. **Set Environment Variables in Vercel Dashboard:**
+   - Go to your project on [Vercel Dashboard](https://vercel.com/dashboard)
+   - Navigate to Settings → Environment Variables
+   - Add the following:
+     - `GITHUB_TOKEN`: Your GitHub Personal Access Token (with `repo` scope)
      - `REPO_OWNER`: Your GitHub username (e.g., `mkeeves`)
      - `REPO_NAME`: Your repository name (e.g., `url-shortener`)
-     - `TURNSTILE_SITE_KEY`: Your Cloudflare Turnstile site key (optional - leave empty if not using)
+
+4. **Get your API URL:**
+   - After deployment, Vercel will give you a URL like: `https://your-project.vercel.app`
+   - Your API endpoint will be: `https://your-project.vercel.app/api/urls`
+
+5. **Update GitHub Secrets:**
+   - Go to your GitHub repository → Settings → Secrets and variables → Actions
+   - Add `API_BASE_URL`: `https://your-project.vercel.app/api/urls`
+
+#### Alternative: Deploy to Netlify
+
+1. Create `netlify.toml`:
+   ```toml
+   [build]
+     functions = "api"
+   
+   [[redirects]]
+     from = "/api/*"
+     to = "/.netlify/functions/:splat"
+     status = 200
+   ```
+
+2. Move `api/urls.js` to `netlify/functions/urls.js`
+
+3. Deploy to Netlify and set environment variables in the dashboard
+
+### 5. Configure Frontend
+
+1. **Set up GitHub Secrets for Frontend:**
+   - Go to your repository on GitHub
+   - Navigate to Settings → Secrets and variables → Actions
+   - Add:
+     - `API_BASE_URL`: Your serverless function URL (e.g., `https://your-project.vercel.app/api/urls`)
+     - `TURNSTILE_SITE_KEY`: Your Cloudflare Turnstile site key (optional)
 
 2. **Configure GitHub Pages:**
    - Go to Settings → Pages
@@ -61,28 +104,8 @@ This approach uses GitHub Actions to automatically generate `config.js` from rep
 
 3. **Deploy:**
    - Push any change to trigger the workflow
-   - The workflow will create `config.js` automatically from your secrets
-   - Your site will be deployed with the configuration included
-
-**Note:** The `config.js` file is generated during deployment and won't appear in your repository. It's only included in the GitHub Pages deployment.
-
-#### Option B: Using config.js File (For Local Development)
-
-1. Copy `config.example.js` to `config.js`:
-```bash
-cp config.example.js config.js
-```
-
-2. Edit `config.js` and fill in your values
-3. **Important**: `config.js` is in `.gitignore` - never commit it to the repository
-
-#### Option C: Using localStorage (For Quick Testing)
-
-1. Open browser console on your deployed site
-2. Run:
-```javascript
-localStorage.setItem('github_token', 'your_token_here');
-```
+   - The workflow will create `config.js` with only the API URL (no tokens!)
+   - Your site will be deployed securely
 
 ### 5. Cloudflare Turnstile Setup (Optional but Recommended)
 
@@ -135,10 +158,12 @@ For low-volume production use, authenticated requests provide sufficient capacit
 
 ## Security Considerations
 
-1. **GitHub Token**: Keep your token secure. Never commit it to the repository.
-2. **Cloudflare Turnstile**: Helps prevent abuse and automated URL creation
-3. **Input Validation**: URLs are validated before creation
-4. **HTTPS**: GitHub Pages provides SSL certificates automatically
+1. **GitHub Token**: Stored server-side only in your serverless function. **Never exposed to the browser.**
+2. **API Proxy**: All GitHub API calls go through a secure backend proxy
+3. **Cloudflare Turnstile**: Helps prevent abuse and automated URL creation
+4. **Input Validation**: URLs are validated before creation
+5. **HTTPS**: GitHub Pages and serverless functions provide SSL certificates automatically
+6. **CORS**: API includes proper CORS headers for secure cross-origin requests
 
 ## Troubleshooting
 

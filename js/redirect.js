@@ -19,15 +19,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // Get URLs from GitHub
-        const urls = await githubAPI.getUrls();
+        // Get URLs from secure API
+        const urls = await apiClient.getUrls();
         
         if (urls[shortCode]) {
             const urlData = urls[shortCode];
             const longUrl = urlData.url;
             
             // Increment click count (fire and forget - don't wait)
-            githubAPI.incrementClickCount(shortCode).catch(error => {
+            apiClient.incrementClickCount(shortCode).catch(error => {
                 console.error('Failed to update click count:', error);
                 // Don't block redirect if analytics fail
             });

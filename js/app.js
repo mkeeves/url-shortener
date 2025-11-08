@@ -75,10 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Check if GitHub token is configured
-    if (!githubAPI.token) {
-        showError('GitHub token not configured. Please create config.js from config.example.js and set GITHUB_TOKEN.');
-        return;
+    // Check if API base URL is configured
+    if (!window.API_BASE_URL && !apiClient.apiBase.startsWith('/')) {
+        console.warn('API_BASE_URL not configured. Using relative path:', apiClient.apiBase);
     }
 
     form.addEventListener('submit', async (e) => {
@@ -141,43 +140,22 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('Starting URL creation process...');
             
-            // Get existing URLs
+            // Get existing URLs to check for collisions
             console.log('Fetching existing URLs...');
-            const urls = await githubAPI.getUrls();
+            const urls = await apiClient.getUrls();
             console.log('Existing URLs fetched:', Object.keys(urls).length);
             
             // Generate unique short code
             const shortCode = generateShortCode(urls);
             console.log('Generated short code:', shortCode);
             
-            // Create new URL entry
-            const newUrl = {
-                url: longUrl,
-                created: new Date().toISOString(),
-                clicks: 0
-            };
-            
-            urls[shortCode] = newUrl;
-            
-            // Get file SHA for update
-            let sha = null;
-            try {
-                console.log('Getting file SHA...');
-                const fileData = await githubAPI.getFileContent('urls.json');
-                sha = fileData.sha;
-                console.log('File SHA retrieved:', sha ? 'yes' : 'no');
-            } catch (error) {
-                // File doesn't exist yet, that's okay
-                console.log('File does not exist yet, will create new file');
-            }
-            
-            // Save to GitHub
-            console.log('Saving URLs to GitHub...');
-            await githubAPI.saveUrls(urls, sha);
-            console.log('URLs saved successfully');
+            // Create URL via secure API
+            console.log('Creating URL via API...');
+            const result = await apiClient.createUrl(longUrl, shortCode);
+            console.log('URL created successfully:', result);
             
             // Show success
-            const shortUrl = `${window.location.origin}/${shortCode}`;
+            const shortUrl = result.shortUrl || `${window.location.origin}/${shortCode}`;
             console.log('Short URL created:', shortUrl);
             showResult(shortUrl);
             

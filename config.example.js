@@ -2,21 +2,16 @@
  * Configuration File
  * 
  * Copy this file to config.js and fill in your values.
- * Add config.js to .gitignore to keep your tokens secure.
  * 
- * IMPORTANT: Never commit config.js to the repository!
+ * IMPORTANT: This file now only contains the API endpoint URL.
+ * All sensitive tokens are stored server-side in your serverless function.
  */
 
-// GitHub Personal Access Token
-// Get one from: https://github.com/settings/tokens
-// Required scopes: repo
-window.GITHUB_TOKEN = 'your_github_token_here';
-
-// GitHub Repository Owner (your GitHub username)
-window.REPO_OWNER = 'your_username';
-
-// GitHub Repository Name
-window.REPO_NAME = 'url-shortener';
+// API Base URL - Your serverless function endpoint
+// For Vercel: https://your-project.vercel.app/api/urls
+// For Netlify: https://your-site.netlify.app/api/urls
+// Leave empty or use '/api/urls' for relative path (same domain)
+window.API_BASE_URL = '/api/urls';
 
 // Cloudflare Turnstile Site Key (optional but recommended)
 // Get one from: https://dash.cloudflare.com/?to=/:account/turnstile

@@ -76,8 +76,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-          # Explicitly include config.js
-          include-hidden-files: false
 
       - name: Deploy to GitHub Pages
         id: deployment

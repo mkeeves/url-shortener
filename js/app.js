@@ -83,11 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const longUrl = document.getElementById('longUrl').value.trim();
+        let longUrl = document.getElementById('longUrl').value.trim();
+        
+        // Normalize URL - add https:// if no protocol is present
+        longUrl = normalizeUrl(longUrl);
         
         // Validate URL
         if (!isValidUrl(longUrl)) {
-            showError('Please enter a valid URL (must start with http:// or https://)');
+            showError('Please enter a valid URL');
             return;
         }
 
@@ -224,6 +227,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return code;
     }
 
+    function normalizeUrl(url) {
+        // If URL doesn't start with http:// or https://, add https://
+        if (!url.match(/^https?:\/\//i)) {
+            // Check if it looks like a domain (contains a dot and no spaces)
+            if (url.includes('.') && !url.includes(' ')) {
+                return 'https://' + url;
+            }
+        }
+        return url;
+    }
+
     function isValidUrl(string) {
         try {
             const url = new URL(string);
@@ -305,6 +319,17 @@ function generateLongerCode(existingUrls) {
     }
     
     return code;
+}
+
+function normalizeUrl(url) {
+    // If URL doesn't start with http:// or https://, add https://
+    if (!url.match(/^https?:\/\//i)) {
+        // Check if it looks like a domain (contains a dot and no spaces)
+        if (url.includes('.') && !url.includes(' ')) {
+            return 'https://' + url;
+        }
+    }
+    return url;
 }
 
 function isValidUrl(string) {

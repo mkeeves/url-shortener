@@ -16,14 +16,14 @@
 
         <main>
             <div class="form-container">
-                <form id="urlForm">
+                <form id="urlForm" novalidate>
                     <div class="input-group">
                         <label for="longUrl">Enter your long URL:</label>
                         <input 
-                            type="url" 
+                            type="text" 
                             id="longUrl" 
                             name="longUrl" 
-                            placeholder="https://example.com/very/long/url"
+                            placeholder="example.com/very/long/url"
                             required
                         >
                     </div>
@@ -58,12 +58,12 @@
         </main>
 
         <footer>
-            <p>Hosted on GitHub Pages</p>
         </footer>
     </div>
 
     <!-- Load configuration (only API_BASE_URL needed now, no tokens!) -->
     <script src="config.js" onerror="console.warn('config.js not found. API_BASE_URL will use default relative path.')"></script>
+    <script src="js/darkmode.js"></script>
     <script src="js/api-client.js"></script>
     <script src="js/app.js"></script>
 </body>

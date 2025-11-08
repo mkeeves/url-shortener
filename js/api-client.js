@@ -23,8 +23,24 @@ class APIClient {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || `API error: ${response.status}`);
+                // Try to parse as JSON, but handle HTML error pages
+                let errorMessage = `API error: ${response.status}`;
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const error = await response.json();
+                        errorMessage = error.error || errorMessage;
+                    } else {
+                        // Response is not JSON (likely HTML error page)
+                        const text = await response.text();
+                        console.error('Non-JSON error response:', text.substring(0, 200));
+                        errorMessage = `API error: ${response.status} ${response.statusText}`;
+                    }
+                } catch (parseError) {
+                    // If parsing fails, use the status
+                    errorMessage = `API error: ${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
@@ -49,8 +65,24 @@ class APIClient {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || `API error: ${response.status}`);
+                // Try to parse as JSON, but handle HTML error pages
+                let errorMessage = `API error: ${response.status}`;
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const error = await response.json();
+                        errorMessage = error.error || errorMessage;
+                    } else {
+                        // Response is not JSON (likely HTML error page)
+                        const text = await response.text();
+                        console.error('Non-JSON error response:', text.substring(0, 200));
+                        errorMessage = `API error: ${response.status} ${response.statusText}`;
+                    }
+                } catch (parseError) {
+                    // If parsing fails, use the status
+                    errorMessage = `API error: ${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();

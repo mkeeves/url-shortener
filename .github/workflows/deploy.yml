@@ -31,12 +31,12 @@ jobs:
           TURNSTILE_KEY="${TURNSTILE_SITE_KEY:-}"
           
           # Use Python to inject configuration into HTML files
-          python3 << 'PYTHON_SCRIPT'
+          python3 << PYTHON_SCRIPT
           import re
           import os
           
-          api_url = os.environ.get('API_BASE_URL', 'https://url-shortener-api.mkeeves.workers.dev')
-          turnstile_key = os.environ.get('TURNSTILE_SITE_KEY', '')
+          api_url = os.environ.get('API_BASE_URL') or 'https://url-shortener-api.mkeeves.workers.dev'
+          turnstile_key = os.environ.get('TURNSTILE_SITE_KEY') or ''
           
           config_script = f'''    <!-- Configuration injected by GitHub Actions -->
           <script>

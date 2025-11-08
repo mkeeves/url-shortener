@@ -93,6 +93,21 @@ jobs:
           fi
           echo "Configuration injection verified"
 
+      - name: Debug - Show injected configuration
+        run: |
+          echo "=== Checking index.html ==="
+          if grep -q "window.API_BASE_URL" index.html; then
+            echo "✅ window.API_BASE_URL found in index.html"
+            grep -A 2 "window.API_BASE_URL" index.html | head -3
+          else
+            echo "❌ window.API_BASE_URL NOT found in index.html"
+            echo "First 20 lines of index.html:"
+            head -20 index.html
+          fi
+          echo ""
+          echo "=== File listing ==="
+          ls -la *.html | head -5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

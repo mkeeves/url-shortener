@@ -62,10 +62,22 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Verify config.js exists
+        run: |
+          if [ ! -f config.js ]; then
+            echo "ERROR: config.js was not created!"
+            exit 1
+          fi
+          echo "config.js exists and has $(wc -l < config.js) lines"
+          # Show first line only (without secrets)
+          head -n 1 config.js
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
+          # Explicitly include config.js
+          include-hidden-files: false
 
       - name: Deploy to GitHub Pages
         id: deployment

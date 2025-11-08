@@ -53,6 +53,11 @@ jobs:
           window.REPO_NAME = '$REPO_NAME';
           window.TURNSTILE_SITE_KEY = '$TURNSTILE_SITE_KEY';
           EOF
+          
+          echo "Config.js created successfully"
+          ls -la config.js
+          echo "First few lines of config.js (without secrets):"
+          head -n 5 config.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

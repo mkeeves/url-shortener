@@ -59,6 +59,22 @@ jobs:
           if grep -q "window.API_BASE_URL = '/api/urls'" config.js; then
             echo "WARNING: API_BASE_URL is using default value - secret may not be set!"
           fi
+          # List files to verify config.js is present
+          ls -la config.js
+
+      - name: Prepare files for deployment
+        run: |
+          # Ensure config.js is not ignored and will be included
+          # Create a temporary .gitignore that excludes config.js from being ignored
+          if [ -f .gitignore ]; then
+            # Create a backup
+            cp .gitignore .gitignore.backup
+            # Remove config.js from .gitignore temporarily
+            grep -v "^config.js$" .gitignore > .gitignore.tmp || touch .gitignore.tmp
+            mv .gitignore.tmp .gitignore
+          fi
+          # Verify config.js is still there
+          ls -la config.js
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -55,11 +55,17 @@ jobs:
           echo "config.js exists and has $(wc -l < config.js) lines"
           # Show first line only (without secrets)
           head -n 1 config.js
+          # Verify the API URL is set (not the default)
+          if grep -q "window.API_BASE_URL = '/api/urls'" config.js; then
+            echo "WARNING: API_BASE_URL is using default value - secret may not be set!"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
+          # Note: upload-pages-artifact includes all files in the path,
+          # including those created during the workflow, even if in .gitignore
 
       - name: Deploy to GitHub Pages
         id: deployment

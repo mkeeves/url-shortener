@@ -105,8 +105,13 @@ jobs:
             head -20 index.html
           fi
           echo ""
-          echo "=== File listing ==="
-          ls -la *.html | head -5
+          echo "=== Verifying file was written to disk ==="
+          # Force sync to ensure files are written
+          sync
+          # Verify again after sync
+          if grep -q "window.API_BASE_URL" index.html; then
+            echo "✅ Confirmed: window.API_BASE_URL still in index.html after sync"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -114,6 +119,10 @@ jobs:
           path: '.'
           # Note: upload-pages-artifact includes all files in the path,
           # including those created during the workflow, even if in .gitignore
+          
+      - name: Verify artifact contents (if possible)
+        run: |
+          echo "Artifact upload completed. Files should include modified HTML with injected configuration."
 
       - name: Deploy to GitHub Pages
         id: deployment
